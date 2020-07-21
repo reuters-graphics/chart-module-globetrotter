@@ -11,9 +11,6 @@ const land = topojson.feature(world, world.objects.land);
 
 class Globetrotter extends ChartComponent {
   defaultProps = {
-    stroke: '#aaa',
-    strokeWidth: 1,
-    fill: 'steelblue',
     location: 'USA',
     // border_stroke_color: 'rgba(255, 255, 255, 0.75)',
     border_stroke_color: '#2f353f',
@@ -28,6 +25,7 @@ class Globetrotter extends ChartComponent {
     enable_dot: true,
     dot_radius: 2.5,
     disputed: true,
+    disputed_dasharray: [5, 5],
   }
 
   draw() {
@@ -48,22 +46,29 @@ class Globetrotter extends ChartComponent {
     if (x && y) {
       projection.rotate([-x, props.vertical_tilt - y])
     }
-    var context = canvas.node().getContext('2d');
+    const context = canvas.node().getContext('2d');
 
-    var path = d3.geoPath(projection, context);
-
-    const l = Atlas.getCountry(props.location);
-    let location;
-    if (l) {
-      location = l.isoAlpha3;
+    const path = d3.geoPath(projection, context);
+    let p=[], location
+    if (Array.isArray(props.location)) {
+      p = props.location;
     } else {
-      location = 'NA';
+      const l = Atlas.getCountry(props.location);
+      if (l) {
+        location = l.isoAlpha3;
+      } else {
+        location = 'NA';
+      }
     }
+
     render();
     function render() {
-      const country = countries.filter(d => d.properties.GID_0 === location)[0];
-      if (country){
-        const p = d3.geoCentroid(country);
+      let country;
+      if (p.length === 0){
+        country = countries.filter(d => d.properties.GID_0 === location)[0];
+        p = d3.geoCentroid(country);
+      }
+      if (p[0]){        
         const r = d3.interpolate(projection.rotate(), [-p[0], props.vertical_tilt - p[1]]);
         canvas.attr('centroid-x', p[0]);
         canvas.attr('centroid-y', p[1]);
@@ -76,12 +81,14 @@ class Globetrotter extends ChartComponent {
               const centroidPro = projection(p);
               context.clearRect(0, 0, width, width);
               context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();  
-              context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();
+              if (country){
+                context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();  
+              }
               if (props.enable_dot){
                 context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI), context.fillStyle = props.highlight_color, context.fill();  
               }
               if (props.disputed){
-                context.beginPath(), path(disputed), context.setLineDash([5,5]),context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
+                context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray),context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
               }
               context.beginPath(), path(borders), context.setLineDash([]), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
               context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
@@ -91,7 +98,7 @@ class Globetrotter extends ChartComponent {
           context.clearRect(0, 0, width, width);
           context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();  
           if (props.disputed){
-            context.beginPath(), path(disputed), context.setLineDash([5,5]),context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
+            context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray),context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
           }
           context.beginPath(), path(borders), context.setLineDash([]), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
           context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();

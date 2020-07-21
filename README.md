@@ -19,13 +19,58 @@ const myChart = new Globetrotter();
 // as well as any props or data to their respective methods. Then call draw.
 myChart
   .selection('#chart')
-  .data([1, 2, 3])
-  .props({ stroke: 'orange' })
+  .props({
+    // Pass name, slug or code of the country you want to highlight,
+    // or pass coordinates if you want to highlight a dot
+    location: 'USA',
+
+    // Colour of the country borders
+    border_stroke_color: '#2f353f',
+
+    // Colour of the sphere
+    outer_stroke_color: 'rgba(255, 255, 255, 0.75)',
+
+    // Stroke width for the country borders
+    stroke_width_countries: 0.5,
+
+    // Stroke width for the sphere
+    stroke_width_sphere: 1.2,
+
+    // Colour you want to highlight in the globe
+    highlight_color: '#fce587',
+
+    // Colour for landmass
+    base_color: 'rgba(255, 255, 255, 0.2)',
+
+    // If you want to have a vertical tilt. Set 15 by default
+    vertical_tilt: 15,
+
+    // Margin in the box
+    margin: 10,
+
+    // duration of the transition
+    duration: 750,
+
+    // For smaller landmass if you want to have a dot to highlight
+    enable_dot: true,
+
+    // Dot radius for the highlight and for lat,lng highlights
+    dot_radius: 2.5,
+
+    // If you want to show disputed borders with a dotted line
+    // True by default
+    disputed: true, 
+
+    // Dasharray for the disputed border lines
+    disputed_dasharray: [5,5],
+  })
   .draw();
 
 // You can call any method again to update the chart.
 myChart
-  .data([3, 4, 5])
+  .props({
+    location: 'india'
+  })
   .draw();
 
 // Or just call the draw function alone, which is useful for resizing the chart.
