@@ -1,8 +1,9 @@
-import ChartComponent from './base/ChartComponent';
-import AtlasMetadataClient from '@reuters-graphics/graphics-atlas-client';
-import world from './topo.js';
-import d3 from './utils/d3';
 import * as topojson from 'topojson-client';
+
+import AtlasMetadataClient from '@reuters-graphics/graphics-atlas-client';
+import ChartComponent from './base/ChartComponent';
+import d3 from './utils/d3';
+import world from './topo.js';
 const Atlas = new AtlasMetadataClient();
 const countries = topojson.feature(world, world.objects.gadm).features;
 const borders = topojson.mesh(world, world.objects.gadm, (a, b) => a !== b);
@@ -52,8 +53,8 @@ class Globetrotter extends ChartComponent {
 
     const path = d3.geoPath(projection, context);
 
-    let p2 = [], location, country;
-    if (Array.isArray(props.location) && props.location.length==2) {
+    let p2 = []; let location; let country;
+    if (Array.isArray(props.location) && props.location.length == 2) {
       p2[0] = props.location[0];
       p2[1] = props.location[1];
     } else {
@@ -65,9 +66,9 @@ class Globetrotter extends ChartComponent {
       }
     }
 
-    if (location === 'NA' && p2.length==0){
+    if (location === 'NA' && p2.length == 0) {
       p2 = p1;
-    } else if (p2.length!=2){
+    } else if (p2.length != 2) {
       country = countries.filter(d => d.properties.GID_0 === location)[0];
       p2 = d3.geoCentroid(country);
     }
@@ -75,7 +76,7 @@ class Globetrotter extends ChartComponent {
     render();
     function render() {
       if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
-        console.log(p1,p2)
+        console.log(p1, p2);
         const r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
         d3.transition()
           .duration(props.duration)
@@ -84,28 +85,28 @@ class Globetrotter extends ChartComponent {
               projection.rotate(r(t));
               const centroidPro = projection(p2);
               context.clearRect(0, 0, width, width);
-              context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();  
-              if (country){
-                context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();  
+              context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();
+              if (country) {
+                context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();
               }
-              if (props.enable_dot){
-                context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI), context.fillStyle = props.highlight_color, context.fill();  
+              if (props.enable_dot) {
+                context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI), context.fillStyle = props.highlight_color, context.fill();
               }
-              if (props.disputed){
-                context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray),context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
+              if (props.disputed) {
+                context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
               }
               context.beginPath(), path(borders), context.setLineDash([]), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
               context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
             };
           });
       } else {
-          context.clearRect(0, 0, width, width);
-          context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();  
-          if (props.disputed){
-            context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray),context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
-          }
-          context.beginPath(), path(borders), context.setLineDash([]), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
-          context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
+        context.clearRect(0, 0, width, width);
+        context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();
+        if (props.disputed) {
+          context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
+        }
+        context.beginPath(), path(borders), context.setLineDash([]), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
+        context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
       }
     };
 
