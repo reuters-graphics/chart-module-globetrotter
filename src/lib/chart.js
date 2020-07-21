@@ -1,8 +1,8 @@
 import ChartComponent from './base/ChartComponent';
-import d3 from './utils/d3';
 import AtlasMetadataClient from '@reuters-graphics/graphics-atlas-client';
 import world from './topo.js';
-const topojson = require('topojson');
+import d3 from './utils/d3';
+import * as topojson from 'topojson-client';
 const Atlas = new AtlasMetadataClient();
 const countries = topojson.feature(world, world.objects.gadm).features;
 const borders = topojson.mesh(world, world.objects.gadm, (a, b) => a !== b);
