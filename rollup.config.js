@@ -20,7 +20,7 @@ export default {
   input: path.resolve(process.cwd(), 'src/lib/chart.js'),
   output: {
     file: path.resolve(process.cwd(), pkg.main),
-    format: 'es',
+    format: 'cjs',
   },
   external: Object.keys(pkg.dependencies),
   plugins: [
