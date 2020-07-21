@@ -13,7 +13,6 @@ const land = topojson.feature(world, world.objects.land);
 class Globetrotter extends ChartComponent {
   defaultProps = {
     location: false,
-    // border_stroke_color: 'rgba(255, 255, 255, 0.75)',
     border_stroke_color: '#2f353f',
     outer_stroke_color: 'rgba(255, 255, 255, 0.75)',
     stroke_width_countries: 0.5,
@@ -76,9 +75,8 @@ class Globetrotter extends ChartComponent {
     render();
     function render() {
       if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
-        console.log(p1, p2);
         const r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
-        d3.transition()
+        canvas.transition()
           .duration(props.duration)
           .tween('rotate', function() {
             return function(t) {

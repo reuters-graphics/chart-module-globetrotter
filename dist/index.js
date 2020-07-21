@@ -2,10 +2,10 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
+var topojson = require('topojson-client');
+var AtlasMetadataClient = _interopDefault(require('@reuters-graphics/graphics-atlas-client'));
 var d3 = require('d3');
 var merge = _interopDefault(require('lodash/merge'));
-var AtlasMetadataClient = _interopDefault(require('@reuters-graphics/graphics-atlas-client'));
-var topojson = require('topojson-client');
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -461,7 +461,6 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
 
     _defineProperty(_assertThisInitialized(_this), "defaultProps", {
       location: false,
-      // border_stroke_color: 'rgba(255, 255, 255, 0.75)',
       border_stroke_color: '#2f353f',
       outer_stroke_color: 'rgba(255, 255, 255, 0.75)',
       stroke_width_countries: 0.5,
@@ -504,9 +503,9 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
 
       var context = canvas.node().getContext('2d');
       var path = d3.geoPath(projection, context);
-      var p2 = [],
-          location,
-          country;
+      var p2 = [];
+      var location;
+      var country;
 
       if (Array.isArray(props.location) && props.location.length == 2) {
         p2[0] = props.location[0];
@@ -534,9 +533,8 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
 
       function render() {
         if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
-          console.log(p1, p2);
           var r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
-          d3.transition().duration(props.duration).tween('rotate', function () {
+          canvas.transition().duration(props.duration).tween('rotate', function () {
             return function (t) {
               projection.rotate(r(t));
               var centroidPro = projection(p2);
