@@ -5,7 +5,7 @@
   "author": "Jon McClure <jon.r.mcclure@gmail.com>",
   "license": "MIT",
   "private": false,
-  "repository": "github:reuters-graphics/<your-repo-here>",
+  "repository": "github:reuters-graphics/chart-module-globetrotter",
   "scripts": {
     "start": "next",
     "build": "next build && next export -o docs && rollup -c rollup.config.js"
