@@ -24,7 +24,7 @@ class ChartComponent extends React.Component {
     // Use it again.
     setTimeout(() => {
       this.chart
-        .props({ location: 'IND' })
+        .props({ location: 'random' })
         .draw();
     }, 2500);
 
