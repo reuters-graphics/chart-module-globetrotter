@@ -11,7 +11,7 @@ const land = topojson.feature(world, world.objects.land);
 
 class Globetrotter extends ChartComponent {
   defaultProps = {
-    location: 'USA',
+    location: false,
     // border_stroke_color: 'rgba(255, 255, 255, 0.75)',
     border_stroke_color: '#2f353f',
     outer_stroke_color: 'rgba(255, 255, 255, 0.75)',
@@ -42,16 +42,20 @@ class Globetrotter extends ChartComponent {
 
     const x = canvas.attr('centroid-x');
     const y = canvas.attr('centroid-y');
+    const p1 = [-x, props.vertical_tilt - y];
 
     if (x && y) {
-      projection.rotate([-x, props.vertical_tilt - y])
+      projection.rotate(p1);
     }
+
     const context = canvas.node().getContext('2d');
 
     const path = d3.geoPath(projection, context);
-    let p=[], location
-    if (Array.isArray(props.location)) {
-      p = props.location;
+
+    let p2 = [], location, country;
+    if (Array.isArray(props.location) && props.location.length==2) {
+      p2[0] = props.location[0];
+      p2[1] = props.location[1];
     } else {
       const l = Atlas.getCountry(props.location);
       if (l) {
@@ -61,24 +65,24 @@ class Globetrotter extends ChartComponent {
       }
     }
 
+    if (location === 'NA' && p2.length==0){
+      p2 = p1;
+    } else if (p2.length!=2){
+      country = countries.filter(d => d.properties.GID_0 === location)[0];
+      p2 = d3.geoCentroid(country);
+    }
+
     render();
     function render() {
-      let country;
-      if (p.length === 0){
-        country = countries.filter(d => d.properties.GID_0 === location)[0];
-        p = d3.geoCentroid(country);
-      }
-      if (p[0]){        
-        const r = d3.interpolate(projection.rotate(), [-p[0], props.vertical_tilt - p[1]]);
-        canvas.attr('centroid-x', p[0]);
-        canvas.attr('centroid-y', p[1]);
-
+      if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
+        console.log(p1,p2)
+        const r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
         d3.transition()
           .duration(props.duration)
           .tween('rotate', function() {
             return function(t) {
               projection.rotate(r(t));
-              const centroidPro = projection(p);
+              const centroidPro = projection(p2);
               context.clearRect(0, 0, width, width);
               context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();  
               if (country){
@@ -104,6 +108,9 @@ class Globetrotter extends ChartComponent {
           context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
       }
     };
+
+    canvas.attr('centroid-x', p2[0]);
+    canvas.attr('centroid-y', p2[1]);
 
     return this;
   }

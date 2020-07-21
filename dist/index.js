@@ -460,7 +460,7 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
     _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "defaultProps", {
-      location: 'USA',
+      location: false,
       // border_stroke_color: 'rgba(255, 255, 255, 0.75)',
       border_stroke_color: '#2f353f',
       outer_stroke_color: 'rgba(255, 255, 255, 0.75)',
@@ -496,18 +496,21 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
       var canvas = this.selection().appendSelect('canvas').attr('width', width).attr('height', width);
       var x = canvas.attr('centroid-x');
       var y = canvas.attr('centroid-y');
+      var p1 = [-x, props.vertical_tilt - y];
 
       if (x && y) {
-        projection.rotate([-x, props.vertical_tilt - y]);
+        projection.rotate(p1);
       }
 
       var context = canvas.node().getContext('2d');
       var path = d3.geoPath(projection, context);
-      var p = [],
-          location;
+      var p2 = [],
+          location,
+          country;
 
-      if (Array.isArray(props.location)) {
-        p = props.location;
+      if (Array.isArray(props.location) && props.location.length == 2) {
+        p2[0] = props.location[0];
+        p2[1] = props.location[1];
       } else {
         var l = Atlas.getCountry(props.location);
 
@@ -518,26 +521,25 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
         }
       }
 
+      if (location === 'NA' && p2.length == 0) {
+        p2 = p1;
+      } else if (p2.length != 2) {
+        country = countries.filter(function (d) {
+          return d.properties.GID_0 === location;
+        })[0];
+        p2 = d3.geoCentroid(country);
+      }
+
       render();
 
       function render() {
-        var country;
-
-        if (p.length === 0) {
-          country = countries.filter(function (d) {
-            return d.properties.GID_0 === location;
-          })[0];
-          p = d3.geoCentroid(country);
-        }
-
-        if (p[0]) {
-          var r = d3.interpolate(projection.rotate(), [-p[0], props.vertical_tilt - p[1]]);
-          canvas.attr('centroid-x', p[0]);
-          canvas.attr('centroid-y', p[1]);
+        if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
+          console.log(p1, p2);
+          var r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
           d3.transition().duration(props.duration).tween('rotate', function () {
             return function (t) {
               projection.rotate(r(t));
-              var centroidPro = projection(p);
+              var centroidPro = projection(p2);
               context.clearRect(0, 0, width, width);
               context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();
 
@@ -569,6 +571,8 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
           context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
         }
       }
+      canvas.attr('centroid-x', p2[0]);
+      canvas.attr('centroid-y', p2[1]);
       return this;
     }
   }]);

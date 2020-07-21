@@ -24,7 +24,7 @@ class ChartComponent extends React.Component {
     // Use it again.
     setTimeout(() => {
       this.chart
-        .props({ location: [139.6503,35.6762] })
+        .props({ location: [139.6503, 35.6762] })
         .draw();
     }, 2500);
 
@@ -56,6 +56,7 @@ class ChartComponent extends React.Component {
         {/* This is our chart container 👇 */}
         <div id='chart' ref={this.chartContainer} />
       </ChartContainer>
+
     );
   }
 }
