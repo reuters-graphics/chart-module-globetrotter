@@ -1,0 +1,40 @@
+{
+  "name": "@reuters-graphics/chart-module-globetrotter",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "author": "Jon McClure <jon.r.mcclure@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "repository": "github:reuters-graphics/<your-repo-here>",
+  "scripts": {
+    "start": "next",
+    "build": "next build && next export -o docs && rollup -c rollup.config.js"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.29",
+    "@fortawesome/free-solid-svg-icons": "^5.13.1",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "@reuters-graphics/eslint-config": "^0.0.2",
+    "@reuters-graphics/style-color": "^1.0.0",
+    "@reuters-graphics/style-theme-eisbaer": "^0.2.3",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "eslint": "^6.8.0",
+    "next": "^9.4.4",
+    "next-transpile-modules": "^3.3.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "rollup": "^2.17.1",
+    "rollup-plugin-alias": "^2.2.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-externals": "^2.2.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "sass": "^1.26.8"
+  },
+  "dependencies": {
+    "d3": "^5.16.0",
+    "lodash": "^4.17.15",
+    "topojson": "^3.0.2"
+  }
+}
