@@ -8,6 +8,7 @@ module.exports = {
       run: [
           ['next', ['build']],
           ['next', ['export'], { o: './docs'}],
+          ['touch', ['./docs/.nojekyll']],
           ['rollup', { c: 'rollup.config.js' }],
       ]
     }
