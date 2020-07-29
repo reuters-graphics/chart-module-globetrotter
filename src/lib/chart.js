@@ -1,18 +1,13 @@
 import * as topojson from 'topojson-client';
-
 import AtlasMetadataClient from '@reuters-graphics/graphics-atlas-client';
 import ChartComponent from './base/ChartComponent';
 import d3 from './utils/d3';
-import world from './topo.js';
+import {indexOf} from 'lodash'
+import world from './topo.js'
 const Atlas = new AtlasMetadataClient();
-const countries = topojson.feature(world, world.objects.gadm).features;
-const borders = topojson.mesh(world, world.objects.gadm, (a, b) => a !== b);
-const disputed = topojson.mesh(world, world.objects.disputed);
-const land = topojson.feature(world, world.objects.land);
 
 class Globetrotter extends ChartComponent {
   defaultProps = {
-    location: false,
     border_stroke_color: '#2f353f',
     outer_stroke_color: 'rgba(255, 255, 255, 0.75)',
     stroke_width_countries: 0.5,
@@ -23,8 +18,10 @@ class Globetrotter extends ChartComponent {
     margin: 10,
     duration: 750,
     enable_dot: true,
-    dot_radius: 2.5,
+    dot_radius: 5,
     disputed: true,
+    location: { value: false, type: 'country' }, // Other types are point and region
+    area_threshold: 10,
     disputed_dasharray: [5, 5],
   }
 
@@ -33,7 +30,10 @@ class Globetrotter extends ChartComponent {
     const node = this.selection().node();
     const sphere = { type: 'Sphere' };
     const { width } = node.getBoundingClientRect();
-
+    const countries = topojson.feature(world, world.objects.gadm);
+    const borders = topojson.mesh(world, world.objects.gadm, (a, b) => a !== b);
+    const disputed = topojson.mesh(world, world.objects.disputed);
+    const land = topojson.feature(world, world.objects.land);
     const projection = d3.geoOrthographic().fitExtent([[10, 10], [width - 10, width - 10]], sphere);
 
     var canvas = this.selection().appendSelect('canvas')
@@ -53,29 +53,35 @@ class Globetrotter extends ChartComponent {
     const path = d3.geoPath(projection, context);
 
     let p2 = []; let location; let country;
-    if (Array.isArray(props.location) && props.location.length == 2) {
-      p2[0] = props.location[0];
-      p2[1] = props.location[1];
-    } else {
-      const l = Atlas.getCountry(props.location);
+    if (Array.isArray(props.location.value) && props.location.value.length == 2 && props.location.type=='point') {
+      p2[0] = props.location.value[0];
+      p2[1] = props.location.value[1];
+    } else if (props.location.type=='region'){
+      const countryList = (Atlas.getRegion(props.location.value).countries).map(d=>d.isoAlpha3);
+      merged = topojson.merge(world, world.objects.gadm.geometries.filter(function(d) { return indexOf(countryList,d.properties.GID_0)>-1 }))
+      p2 = d3.geoCentroid(merged);
+    } else if (props.location.type=='country'){
+      const l = Atlas.getCountry(props.location.value);
       if (l) {
         location = l.isoAlpha3;
+        country = countries.features.filter(d => d.properties.GID_0 === location)[0];
+        p2 = d3.geoCentroid(country);
       } else {
         location = 'NA';
+        if (p2.length==0){
+           p2 = p1;
+        }
       }
     }
 
-    if (location === 'NA' && p2.length == 0) {
-      p2 = p1;
-    } else if (p2.length != 2) {
-      country = countries.filter(d => d.properties.GID_0 === location)[0];
-      p2 = d3.geoCentroid(country);
-    }
+    let area, endPath, merged;
 
     render();
     function render() {
       if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
+        endPath = d3.geoPath(d3.geoOrthographic().fitExtent([[10, 10], [width - 10, width - 10]], sphere).rotate([-p2[0], props.vertical_tilt - p2[1]]), context);
         const r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
+        area = endPath.area(country);
         canvas.transition()
           .duration(props.duration)
           .tween('rotate', function() {
@@ -84,12 +90,16 @@ class Globetrotter extends ChartComponent {
               const centroidPro = projection(p2);
               context.clearRect(0, 0, width, width);
               context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();
-              if (country) {
-                context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();
+              if (merged) {
+                context.beginPath(), path(merged), context.fillStyle = props.highlight_color, context.fill();
+              } else {
+                if (props.enable_dot && area < props.area_threshold) {
+                  context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI),  context.strokeStyle = props.highlight_color, context.lineWidth = props.dot_radius-2, context.stroke();
+                } else if (country) {
+                  context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();
+                }
               }
-              if (props.enable_dot) {
-                context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI), context.fillStyle = props.highlight_color, context.fill();
-              }
+
               if (props.disputed) {
                 context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
               }

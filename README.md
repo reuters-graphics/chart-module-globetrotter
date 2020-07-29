@@ -20,10 +20,11 @@ const myChart = new Globetrotter();
 myChart
   .selection('#chart')
   .props({
-    // Pass name, slug or code of the country you want to highlight,
-    // or pass coordinates if you want to highlight a dot
-    location: 'USA',
-
+    // Pass name, slug or code of the country/region you want to highlight,
+    // or pass coordinates if you want to highlight a point
+    // Pass the type of location
+    location: { value: false, type: 'country' }, // Other types are point and region
+    
     // Colour of the country borders
     border_stroke_color: '#2f353f',
 
@@ -54,8 +55,11 @@ myChart
     // For smaller landmass if you want to have a dot to highlight
     enable_dot: true,
 
-    // Dot radius for the highlight and for lat,lng highlights
-    dot_radius: 2.5,
+    // Dot radius for lat,lng highlights
+    dot_radius: 5,
+
+    // Area threshold below which you want to show dot marker and not area
+    area_threshold: 10,
 
     // If you want to show disputed borders with a dotted line
     // True by default
@@ -63,6 +67,7 @@ myChart
 
     // Dasharray for the disputed border lines
     disputed_dasharray: [5,5],
+
   })
   .draw();
 

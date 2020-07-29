@@ -7,7 +7,7 @@ import debounce from 'lodash/debounce';
 class ChartComponent extends React.Component {
   state = {
     width: '',
-    location: [139.6503, 35.6762],
+    location: {value:[139.6503, 35.6762], type: 'point'}
   };
 
   chartContainer = React.createRef();
@@ -28,15 +28,11 @@ class ChartComponent extends React.Component {
     // Use it again.
     setTimeout(() => {
       this.chart
-        .props({ location: this.state.location })
+        .props({
+          location:{value:'africa', type: 'region'}
+        })
         .draw();
     }, 2500);
-
-    // setTimeout(() => {
-    //   this.chart
-    //     .props({ location: 'HKG' })
-    //     .draw();
-    // }, 5000);
 
     // Add a listener to resize chart with the window.
     window.addEventListener('resize', this.resize);
@@ -58,23 +54,30 @@ class ChartComponent extends React.Component {
 
   render() {
     const { width } = this.state;
-    console.log('state', this.state.location);
     return (
       <ChartContainer width={width} setWidth={(width) => this.setState({ width })}>
         {/* This is our chart container 👇 */}
         <div id='chart' ref={this.chartContainer} />
         <div>
           <button
-            onClick={() => this.setState({ location: 'HKG' })}
+            onClick={() => this.setState({ location:{value:'HKG', type: 'country'} })}
           >Hong Kong
           </button>
           <button
-            onClick={() => this.setState({ location: 'USA' })}
+            onClick={() => this.setState({ location:{value:'USA', type: 'country'} })}
           >USA
           </button>
           <button
-            onClick={() => this.setState({ location: 'DE' })}
+            onClick={() => this.setState({ location:{value:'DE', type: 'country'} })}
           >Germany
+          </button>
+          <button
+            onClick={() => this.setState({ location:{value:'europe', type: 'region'} })}
+          >Europe
+          </button>
+          <button
+            onClick={() => this.setState({ location:{value:[139.6503, 35.6762], type: 'point'} })}
+          >Tokyo
           </button>
         </div>
       </ChartContainer>
