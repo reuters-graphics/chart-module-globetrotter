@@ -546,7 +546,7 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
       render();
 
       function render() {
-        if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
+        if (p1[0] !== p2[0] && p1[1] !== p2[1] && p2[0] && p2[1]) {
           endPath = d3.geoPath(d3.geoOrthographic().fitExtent([[10, 10], [width - 10, width - 10]], sphere).rotate([-p2[0], props.vertical_tilt - p2[1]]), context);
           var r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
           area = endPath.area(country);
@@ -559,12 +559,8 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
 
               if (merged) {
                 context.beginPath(), path(merged), context.fillStyle = props.highlight_color, context.fill();
-              } else {
-                if (props.enable_dot && area < props.area_threshold) {
-                  context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI), context.strokeStyle = props.highlight_color, context.lineWidth = props.dot_radius - 2, context.stroke();
-                } else if (country) {
-                  context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();
-                }
+              } else if (country && area > props.area_threshold || !props.enable_dot) {
+                context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();
               }
 
               if (props.disputed) {
@@ -572,6 +568,11 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
               }
 
               context.beginPath(), path(borders), context.setLineDash([]), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
+
+              if (props.enable_dot && area < props.area_threshold) {
+                context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI), context.strokeStyle = props.highlight_color, context.lineWidth = props.dot_radius - 2, context.stroke();
+              }
+
               context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
             };
           });

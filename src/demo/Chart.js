@@ -79,6 +79,14 @@ class ChartComponent extends React.Component {
             onClick={() => this.setState({ location:{value:[139.6503, 35.6762], type: 'point'} })}
           >Tokyo
           </button>
+           <button
+            onClick={() => this.setState({ location:{value:'LBN', type: 'country'} })}
+          >Lebanon
+          </button>
+           <button
+            onClick={() => this.setState({ location:{value:'GIF', type: 'country'} })}
+          >Gibberish
+          </button>
         </div>
       </ChartContainer>
 

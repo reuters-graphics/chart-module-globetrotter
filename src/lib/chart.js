@@ -65,7 +65,7 @@ class Globetrotter extends ChartComponent {
       if (l) {
         location = l.isoAlpha3;
         country = countries.features.filter(d => d.properties.GID_0 === location)[0];
-        p2 = d3.geoCentroid(country);
+        p2 = d3.geoCentroid(country);  
       } else {
         location = 'NA';
         if (p2.length==0){
@@ -78,7 +78,7 @@ class Globetrotter extends ChartComponent {
 
     render();
     function render() {
-      if (p1[0] !== p2[0] && p1[1] !== p2[1]) {
+      if (p1[0] !== p2[0] && p1[1] !== p2[1] && (p2[0] && p2[1])) {
         endPath = d3.geoPath(d3.geoOrthographic().fitExtent([[10, 10], [width - 10, width - 10]], sphere).rotate([-p2[0], props.vertical_tilt - p2[1]]), context);
         const r = d3.interpolate(projection.rotate(), [-p2[0], props.vertical_tilt - p2[1]]);
         area = endPath.area(country);
@@ -92,18 +92,16 @@ class Globetrotter extends ChartComponent {
               context.beginPath(), path(land), context.fillStyle = props.base_color, context.fill();
               if (merged) {
                 context.beginPath(), path(merged), context.fillStyle = props.highlight_color, context.fill();
-              } else {
-                if (props.enable_dot && area < props.area_threshold) {
-                  context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI),  context.strokeStyle = props.highlight_color, context.lineWidth = props.dot_radius-2, context.stroke();
-                } else if (country) {
+              } else if ((country && area > props.area_threshold) || (!props.enable_dot)) {
                   context.beginPath(), path(country), context.fillStyle = props.highlight_color, context.fill();
-                }
               }
-
               if (props.disputed) {
                 context.beginPath(), path(disputed), context.setLineDash(props.disputed_dasharray), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
               }
               context.beginPath(), path(borders), context.setLineDash([]), context.strokeStyle = props.border_stroke_color, context.lineWidth = props.stroke_width_countries, context.stroke();
+               if (props.enable_dot && area < props.area_threshold){
+                context.beginPath(), context.arc(centroidPro[0], centroidPro[1], props.dot_radius, 0, 2 * Math.PI),  context.strokeStyle = props.highlight_color, context.lineWidth = props.dot_radius-2, context.stroke();
+              }
               context.beginPath(), path(sphere), context.strokeStyle = props.outer_stroke_color, context.lineWidth = props.stroke_width_sphere, context.stroke();
             };
           });
