@@ -1,13 +1,17 @@
 import Chart from '../lib/chart.js';
 import ChartContainer from './furniture/ChartContainer';
+import LocationOptions from './LocationOptions';
 import React from 'react';
+import SpinOptions from './SpinOptions';
 import { base } from '@reuters-graphics/style-color/dist/categorical';
 import debounce from 'lodash/debounce';
 
 class ChartComponent extends React.Component {
   state = {
-    width: '',
-    location: {value:[139.6503, 35.6762], type: 'point'}
+    width: 'mobile',
+    location: ['singapore'],
+    spin: false,
+    spinSpeed: 5000,
   };
 
   chartContainer = React.createRef();
@@ -19,20 +23,16 @@ class ChartComponent extends React.Component {
   resize = debounce(() => { this.chart.draw(); }, 250);
 
   componentDidMount() {
-    // Use our chart module.
-    this.chart
-      .selection(this.chartContainer.current)
-      .props({ fill: base.blue.hex })
-      .draw();
-
-    // Use it again.
-    setTimeout(() => {
-      this.chart
-        .props({
-          location:{value:'africa', type: 'region'}
-        })
-        .draw();
-    }, 2500);
+    fetch('https://cdn.jsdelivr.net/npm/@reuters-graphics/graphics-atlas-client@0.3.5/topojson/custom/world.json')
+      .then(r => r.json())
+      .then(topojson => {
+        // Use our chart module.
+        this.chart
+          .selection(this.chartContainer.current)
+          .topojson(topojson)
+          .props({ fill: base.blue.hex })
+          .draw();
+      });
 
     // Add a listener to resize chart with the window.
     window.addEventListener('resize', this.resize);
@@ -46,49 +46,31 @@ class ChartComponent extends React.Component {
   componentDidUpdate() {
     // Update the chart with the component.
     // Can change data or props here, whatever...
+    const { spin, spinSpeed } = this.state;
     this.chart
-      .selection(this.chartContainer.current)
-      .props({ location: this.state.location })
+      .props({ spin, spinSpeed })
+      .location(...this.state.location)
       .draw();
   }
 
   render() {
-    const { width } = this.state;
+    const { width, spin, spinSpeed } = this.state;
     return (
-      <ChartContainer width={width} setWidth={(width) => this.setState({ width })}>
-        {/* This is our chart container 👇 */}
-        <div id='chart' ref={this.chartContainer} />
-        <div>
-          <button
-            onClick={() => this.setState({ location:{value:'HKG', type: 'country'} })}
-          >Hong Kong
-          </button>
-          <button
-            onClick={() => this.setState({ location:{value:'USA', type: 'country'} })}
-          >USA
-          </button>
-          <button
-            onClick={() => this.setState({ location:{value:'DE', type: 'country'} })}
-          >Germany
-          </button>
-          <button
-            onClick={() => this.setState({ location:{value:'europe', type: 'region'} })}
-          >Europe
-          </button>
-          <button
-            onClick={() => this.setState({ location:{value:[139.6503, 35.6762], type: 'point'} })}
-          >Tokyo
-          </button>
-           <button
-            onClick={() => this.setState({ location:{value:'LBN', type: 'country'} })}
-          >Lebanon
-          </button>
-           <button
-            onClick={() => this.setState({ location:{value:'GIF', type: 'country'} })}
-          >Gibberish
-          </button>
+      <div>
+        <ChartContainer width={width} setWidth={(width) => this.setState({ width })}>
+          {/* This is our chart container 👇 */}
+          <div id='chart' ref={this.chartContainer} />
+        </ChartContainer>
+        <div className='chart-options'>
+          <LocationOptions setState={(state) => this.setState(state)} />
+          <SpinOptions
+            spin={spin}
+            setSpin={() => this.setState(prevState => ({ spin: !prevState.spin }))}
+            spinSpeed={spinSpeed}
+            setSpinSpeed={(spinSpeed) => this.setState({ spinSpeed })}
+          />
         </div>
-      </ChartContainer>
+      </div>
 
     );
   }
