@@ -1,18 +1,17 @@
 import {
-  ErrorDataType,
   ErrorDrawMethodUndefined,
+  ErrorLocationType,
   ErrorPropsType,
-  ErrorSelectorType
+  ErrorSelectorType,
+  ErrorTopojsonType
 } from './errorClasses';
 
 import d3 from '../utils/d3';
 import merge from 'lodash/merge';
 
 class ChartComponent {
-  constructor(selector, props, data) {
+  constructor(selector) {
     this.selection(selector);
-    this.props(props);
-    this.data(data);
   }
 
   /**
@@ -58,17 +57,33 @@ class ChartComponent {
   defaultData = []
 
   /**
-   * Getter/setter for chart data
+   * Getter/setter for chart location
    * @param  {Array} arr data
    */
-  data(arr) {
-    if (!arr) return this._data || this.defaultData;
+  location(arrOrString, overrideCentroid = null) {
+    if (!arrOrString) return this._location || 'singapore';
 
-    if (!(arr instanceof Array)) {
-      throw new ErrorDataType(this.constructor.name);
+    this._overrideCentroid = overrideCentroid;
+
+    if (!(arrOrString instanceof Array) && !(typeof arrOrString === 'string')) {
+      throw new ErrorLocationType(this.constructor.name);
     }
 
-    this._data = arr;
+    this._location = arrOrString;
+    return this;
+  }
+
+  /**
+   * Getter/setter for chart topojson
+   * @param  {Object} obj topology
+   */
+  topojson(obj) {
+    if (!obj) return this._topojson || {};
+    if (typeof obj !== 'object') {
+      throw new ErrorTopojsonType(this.constructor.name);
+    }
+
+    this._topojson = obj;
     return this;
   }
 

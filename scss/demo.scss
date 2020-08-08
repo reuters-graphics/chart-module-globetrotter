@@ -1,9 +1,11 @@
 @import "~@reuters-graphics/style-theme-eisbaer/scss/main";
 @import "~@reuters-graphics/style-color/scss/thematic/brand";
+@import "~@reuters-graphics/style-main/scss/fonts/mixins";
 
 $Globetrotter-container: '#chart';
 
 @import 'chart';
+@import 'react-toggle';
 
 // Some styles for the preview page...
 $dark-blue: #2f353f;
@@ -24,7 +26,7 @@ nav.nav{
   text-align: center;
   svg{
     margin: 0 auto;
-    fill: $brand-secondary;
+    fill: white;
     .st4{
       fill: $brand;
     }
@@ -33,7 +35,7 @@ nav.nav{
 
 section.graphic{
   margin-top: 80px;
-  margin-bottom: 80px;
+  margin-bottom: 20px;
 }
 
 section.graphic.mobile{
@@ -69,5 +71,38 @@ div.size-options{
       border-bottom-right-radius: 5px;
       border-right: 1px solid #ccc;
     }
+  }
+
+}
+
+div.chart-options {
+  @include font-sans;
+  max-width: 800px;
+  margin: 0px auto 80px;
+  font-weight: 200;
+  text-align: center;
+  button{
+    background: transparent;
+    border: 1px solid #666;
+    margin: 4px;
+    color: white;
+    border-radius: 4px;
+    font-weight: 200;
+    letter-spacing: 0.1rem;
+  }
+
+  .spin-options{
+    margin-top: 25px;
+    label span {
+      width: 42px;
+      text-align: right;
+      color: white;
+      line-height: 20px;
+      vertical-align: middle;
+      margin-right: 10px;
+      margin-top: -16px;
+      display: inline-block;
+    }
+
   }
 }

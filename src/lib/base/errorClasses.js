@@ -18,6 +18,10 @@ export class ErrorPropsType extends ChartError {
   message = `${this.constructorName} props should be an Object`
 }
 
-export class ErrorDataType extends ChartError {
-  message = `${this.constructorName} data should be an Array`
+export class ErrorTopojsonType extends ChartError {
+  message = `${this.constructorName} topojson should be an Object`
+}
+
+export class ErrorLocationType extends ChartError {
+  message = `${this.constructorName} location should be an Array of lat/lon coordinates or a valid region or country ID`
 }
