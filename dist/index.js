@@ -834,6 +834,11 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
         if (this._timer) resetTimer();
         var phiInterpolator = d3.interpolate(this._rotation[1], props.globe.verticalAxisTilt - destination[1]);
         this._timer = d3.timer(function (elapsed) {
+          if (!props.spin) {
+            resetTimer();
+            return;
+          }
+
           rotate(elapsed, phiInterpolator);
         });
       }
