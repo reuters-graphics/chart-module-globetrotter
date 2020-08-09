@@ -249,6 +249,10 @@ class Globetrotter extends ChartComponent {
       if (this._timer) resetTimer();
       const phiInterpolator = d3.interpolate(this._rotation[1], props.globe.verticalAxisTilt - destination[1]);
       this._timer = d3.timer((elapsed) => {
+        if (!props.spin) {
+          resetTimer();
+          return;
+        }
         rotate(elapsed, phiInterpolator);
       });
     }
