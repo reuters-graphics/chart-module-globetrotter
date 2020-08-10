@@ -59,6 +59,10 @@ const LocationOptions = (props) => {
         onClick={() => props.setState({ location: [[0, 0]] })}
       >0, 0
       </button>
+      <button
+        onClick={() => props.setState({ location: [null] })}
+      >null
+      </button>
     </div>
   );
 };

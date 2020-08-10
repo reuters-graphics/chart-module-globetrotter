@@ -60,16 +60,20 @@ class ChartComponent {
    * Getter/setter for chart location
    * @param  {Array} arr data
    */
-  location(arrOrString, overrideCentroid = null) {
-    if (!arrOrString) return this._location || 'singapore';
+  location(arrStringOrNull, overrideCentroid = null) {
+    if (arrStringOrNull === undefined) return this._location;
 
     this._overrideCentroid = overrideCentroid;
 
-    if (!(arrOrString instanceof Array) && !(typeof arrOrString === 'string')) {
+    if (
+      !(arrStringOrNull instanceof Array) &&
+      !(typeof arrStringOrNull === 'string') &&
+      arrStringOrNull !== null
+    ) {
       throw new ErrorLocationType(this.constructor.name);
     }
 
-    this._location = arrOrString;
+    this._location = arrStringOrNull;
     return this;
   }
 

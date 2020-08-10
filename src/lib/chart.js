@@ -98,6 +98,7 @@ class Globetrotter extends ChartComponent {
 
   _drawMarker(projectedCentroid) {
     const { marker } = this.props();
+    if (this.location() === null) return;
     if (marker.type === 'double-ring') {
       this._context.beginPath();
       this._context.arc(projectedCentroid[0], projectedCentroid[1], marker.radius, 0, 2 * Math.PI);
