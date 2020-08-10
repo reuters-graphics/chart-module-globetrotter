@@ -478,16 +478,16 @@ var ChartComponent = /*#__PURE__*/function () {
      * Getter/setter for chart location
      * @param  {Array} arr data
      */
-    value: function location(arrOrString) {
+    value: function location(arrStringOrNull) {
       var overrideCentroid = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      if (!arrOrString) return this._location || 'singapore';
+      if (arrStringOrNull === undefined) return this._location;
       this._overrideCentroid = overrideCentroid;
 
-      if (!(arrOrString instanceof Array) && !(typeof arrOrString === 'string')) {
+      if (!(arrStringOrNull instanceof Array) && !(typeof arrStringOrNull === 'string') && arrStringOrNull !== null) {
         throw new ErrorLocationType(this.constructor.name);
       }
 
-      this._location = arrOrString;
+      this._location = arrStringOrNull;
       return this;
     }
     /**
@@ -675,6 +675,8 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
     value: function _drawMarker(projectedCentroid) {
       var _this$props6 = this.props(),
           marker = _this$props6.marker;
+
+      if (this.location() === null) return;
 
       if (marker.type === 'double-ring') {
         this._context.beginPath();
