@@ -816,7 +816,7 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
         var scale = d3.scaleLinear().domain([0, props.spinSpeed]).range([0, 360]);
         var step = scale(elapsed - lastElapsed);
         var phi = phiInterpolator(Math.min(elapsed / props.spinToSpeed, 1));
-        projection.rotate([_this2._rotation[0] - step, phi]);
+        projection.rotate([_this2._rotation[0] + step, phi]);
         var projectedCentroid = projection(destination);
         drawMap(projectedCentroid);
         _this2._rotation = projection.rotate();
