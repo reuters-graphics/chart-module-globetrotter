@@ -231,7 +231,7 @@ class Globetrotter extends ChartComponent {
       const step = scale(elapsed - lastElapsed);
 
       const phi = phiInterpolator(Math.min(elapsed / props.spinToSpeed, 1));
-      projection.rotate([this._rotation[0] - step, phi]);
+      projection.rotate([this._rotation[0] + step, phi]);
       const projectedCentroid = projection(destination);
       drawMap(projectedCentroid);
       this._rotation = projection.rotate();
