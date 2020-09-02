@@ -768,6 +768,7 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
           });
           highlightArea = topojson.merge(topology, filteredFeatures);
           destination = d3.geoCentroid(highlightArea);
+          if (destination.includes(NaN) && 'centroid' in filteredFeatures[0].properties && !filteredFeatures[0].properties.centroid.includes(null)) destination = filteredFeatures[0].properties.centroid;
         } else {
           destination = [0, 0];
         }
