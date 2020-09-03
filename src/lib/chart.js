@@ -193,6 +193,7 @@ class Globetrotter extends ChartComponent {
       this._context
     );
     const highlightAreaSize = geoPath.area(highlightArea);
+
     const showMarker = (
       highlightAreaSize < props.marker.replacementThreshold &&
       props.marker.replaceSmallPolygons
@@ -207,9 +208,9 @@ class Globetrotter extends ChartComponent {
       this._drawBorders();
 
       if (showMarker) {
-        const geoAngle = d3.geoDistance(destination, [-projection.rotate()[0], projection.rotate()[1]]);
+        const geoAngle = d3.geoDistance(destination, [-projection.rotate()[0], props.globe.verticalAxisTilt - projection.rotate()[1]]);
         // Check if the marker is behind the globe
-        if (geoAngle < 1.57079632679490) {
+        if (geoAngle < 1.57) {
           this._drawMarker(projectedCentroid);
         }
       }

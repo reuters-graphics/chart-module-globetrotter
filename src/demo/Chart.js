@@ -48,7 +48,7 @@ class ChartComponent extends React.Component {
     // Can change data or props here, whatever...
     const { spin, spinSpeed } = this.state;
     this.chart
-      .props({ spin, spinSpeed })
+      .props({ spin, spinSpeed, marker: { replacementThreshold: 100000 } })
       .location(...this.state.location)
       .draw();
   }

@@ -792,9 +792,9 @@ var Globetrotter = /*#__PURE__*/function (_ChartComponent) {
         _this2._drawBorders();
 
         if (showMarker) {
-          var geoAngle = d3.geoDistance(destination, [-projection.rotate()[0], projection.rotate()[1]]); // Check if the marker is behind the globe
+          var geoAngle = d3.geoDistance(destination, [-projection.rotate()[0], props.globe.verticalAxisTilt - projection.rotate()[1]]); // Check if the marker is behind the globe
 
-          if (geoAngle < 1.57079632679490) {
+          if (geoAngle < 1.57) {
             _this2._drawMarker(projectedCentroid);
           }
         }
