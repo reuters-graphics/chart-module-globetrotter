@@ -148,12 +148,15 @@ class Globetrotter extends ChartComponent {
     this._land = topojson.feature(topology, landFeatures);
 
     const canvas = this.selection().appendSelect('canvas')
-      .attr('width', width)
-      .attr('height', width);
+      .attr('width', width * 2)
+      .attr('height', width * 2)
+      .style('width', `${width}px`)
+      .style('height', `${width}px`);
 
     projection.rotate(this._rotation);
 
     this._context = canvas.node().getContext('2d');
+    this._context.scale(2, 2);
     this._path = d3.geoPath(projection, this._context);
 
     let destination = [];
