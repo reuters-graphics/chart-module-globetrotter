@@ -23,7 +23,7 @@ class ChartComponent extends React.Component {
   resize = debounce(() => { this.chart.draw(); }, 250);
 
   componentDidMount() {
-    fetch('https://cdn.jsdelivr.net/npm/@reuters-graphics/graphics-atlas-client@0.3.5/topojson/custom/world.json')
+    fetch('https://cdn.jsdelivr.net/npm/@reuters-graphics/graphics-atlas-client@0.4.6/topojson/custom/world.json')
       .then(r => r.json())
       .then(topojson => {
         // Use our chart module.

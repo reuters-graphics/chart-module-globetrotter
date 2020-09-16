@@ -12,8 +12,8 @@ const LocationOptions = (props) => {
       >USA
       </button>
       <button
-        onClick={() => props.setState({ location: ['DE'] })}
-      >Germany
+        onClick={() => props.setState({ location: ['asia-and-the-middle-east'] })}
+      >Asia and the Middle East
       </button>
       <button
         onClick={() => props.setState({ location: ['europe', [13.404954, 52.520008]] })}
